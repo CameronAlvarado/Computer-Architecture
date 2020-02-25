@@ -29,7 +29,7 @@ class CPU:
                     value = line.rstrip()
                     if value == "":
                         continue
-                    num = '{0:08}'.format(int(value, 2))
+                    num = int(value, 2)
                     print(num)
                     self.ram_write(num, address)
                     address += 1
@@ -107,10 +107,10 @@ class CPU:
 
             if command == MUL:
                 # Multiply the values in two registers together and store in reg A
-                multi = operand_a * operand_b
+                multi = self.reg[operand_a] * self.reg[operand_b]
+                print("multi:", multi)
                 self.reg[operand_a] = multi
                 self.pc += 3
-                self.trace()
 
             if command == LDI:
                 # LDI: register immediate. Set the value of a register to an integer
@@ -133,12 +133,12 @@ class CPU:
                 print("PC", self.pc)
                 self.pc += 2
 
-            else:
+            # else:
                 # self.trace()
-                print("------------------")
-                print("IR, 130 = LDI =>", command)
-                print("PC", self.pc)
-                print("reg", self.reg)
-                print("op_a", operand_a)
-                print("op_b", operand_b)
-                print("------------------")
+                # print("------------------")
+                # print("IR, 130 = LDI =>", command)
+                # print("PC", self.pc)
+                # print("reg", self.reg)
+                # print("op_a", operand_a)
+                # print("op_b", operand_b)
+                # print("------------------")
