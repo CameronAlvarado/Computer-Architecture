@@ -21,10 +21,27 @@ class CPU:
 
     def load(self, program):
         """Load a program into memory."""
+        path = sys.argv[1]
+        # Checks if file exists
+        try:
+            with open(path, 'r') as f:
+                contents = f.read()
+                cpu.load(contents)
 
-        address = 0
+                address = 0
 
-        # For now, we've just hardcoded a program:
+                for line in program:
+                    line = line.split('#', 1)[0]
+                    print("Line:", line)
+                    value = line.rstrip()
+                    if value == "":
+                        continue
+                    num = '{0:08b}'.format(int(value))
+                    # print(num)
+                    self.ram_write(line, address)
+                    address += 1
+        except:
+            print("EXCEPTION")
 
         # program = [
         #     # From print8.ls8
@@ -78,7 +95,7 @@ class CPU:
         LDI = 0b10000010
         PRN = 0b01000111
         HLT = 0b00000001
-        MUL = None
+        MUL = 0b10100010
 
         while True:
             # This is the Instruction Register as 'command'
@@ -93,6 +110,13 @@ class CPU:
                 print("HALT")
                 running = False
                 sys.exit(0)
+
+            if command == MUL:
+                # Multiply the values in two registers together and store in reg A
+                mult = operand_a * operand_b
+                self.reg[operand_a] = mult
+                self.pc += 3
+                self.trace()
 
             if command == LDI:
                 # LDI: register immediate. Set the value of a register to an integer
