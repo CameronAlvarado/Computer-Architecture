@@ -19,29 +19,23 @@ class CPU:
         self.ram[mar] = mdr
         return self.ram[mar]
 
-    def load(self, program):
+    def load(self, filename):
         """Load a program into memory."""
-        path = sys.argv[1]
-        # Checks if file exists
         try:
-            with open(path, 'r') as f:
-                contents = f.read()
-                cpu.load(contents)
-
-                address = 0
-
-                for line in program:
+            address = 0
+            with open(filename) as f:
+                for line in f:
                     line = line.split('#', 1)[0]
-                    print("Line:", line)
                     value = line.rstrip()
                     if value == "":
                         continue
-                    num = '{0:08b}'.format(int(value))
-                    # print(num)
-                    self.ram_write(line, address)
+                    num = '{0:08}'.format(int(value, 2))
+                    print(num)
+                    self.ram_write(num, address)
                     address += 1
-        except:
-            print("EXCEPTION")
+        except FileNotFoundError:
+            print("File not found")
+            sys.exit(2)
 
         # program = [
         #     # From print8.ls8
@@ -53,9 +47,9 @@ class CPU:
         #     0b00000001,  # HLT
         # ]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        # for instruction in program:
+        #     self.ram[address] = instruction
+        #     address += 1
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -113,8 +107,8 @@ class CPU:
 
             if command == MUL:
                 # Multiply the values in two registers together and store in reg A
-                mult = operand_a * operand_b
-                self.reg[operand_a] = mult
+                multi = operand_a * operand_b
+                self.reg[operand_a] = multi
                 self.pc += 3
                 self.trace()
 
