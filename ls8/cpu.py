@@ -75,6 +75,7 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
+        self.load()
         while True:
             command = self.ram[self.pc]
 
@@ -83,3 +84,7 @@ class CPU:
                 value = self.ram_read(self.pc + 2)
                 self.reg[reg_num] = value
                 self.pc += 3
+            if command == HLT:
+                pass
+            if command == PRN:
+                pass
