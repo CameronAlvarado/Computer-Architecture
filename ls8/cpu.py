@@ -108,7 +108,6 @@ class CPU:
             if command == MUL:
                 # Multiply the values in two registers together and store in reg A
                 multi = self.reg[operand_a] * self.reg[operand_b]
-                print("multi:", multi)
                 self.reg[operand_a] = multi
                 self.pc += 3
 
@@ -135,10 +134,10 @@ class CPU:
 
             # else:
                 # self.trace()
-                # print("------------------")
-                # print("IR, 130 = LDI =>", command)
-                # print("PC", self.pc)
-                # print("reg", self.reg)
-                # print("op_a", operand_a)
-                # print("op_b", operand_b)
-                # print("------------------")
+                print("------------------")
+                print("IR, 130 = LDI =>", command)
+                print("PC", self.pc)
+                print("reg", self.reg)
+                print("op_a", operand_a)
+                print("op_b", operand_b)
+                print("------------------")
