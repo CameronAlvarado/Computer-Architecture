@@ -7,5 +7,14 @@ from cpu import *
 
 cpu = CPU()
 
-cpu.load()
+with open(sys.argv[1], 'r') as f:
+    contents = f.read()
+    print(contents)
+
+# program = open("examples/mult.ls8", "r")
+# if program.mode == 'r':
+#     contents = program.read()
+#     print(contents)
+
+cpu.load(contents)
 cpu.run()

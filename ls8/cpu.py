@@ -3,11 +3,6 @@
 import sys
 
 
-HLT = 0b00000001
-LDI = 0b10000010
-PRN = 0b01000111
-
-
 class CPU:
     """Main CPU class."""
 
@@ -15,6 +10,7 @@ class CPU:
         self.ram = [0] * 255
         self.reg = [0] * 8
         self.pc = 0
+        self.fl = 0
 
     def ram_read(self, mar):
         return self.ram[mar]
@@ -23,22 +19,22 @@ class CPU:
         self.ram[mar] = mdr
         return self.ram[mar]
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
 
         address = 0
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010,  # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111,  # PRN R0
-            0b00000000,
-            0b00000001,  # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010,  # LDI R0,8     | - 3 slots
+        #     0b00000000,  # | -
+        #     0b00001000,  # | -
+        #     0b01000111,  # PRN R0       | - 2 slots
+        #     0b00000000,  # | -
+        #     0b00000001,  # HLT
+        # ]
 
         for instruction in program:
             self.ram[address] = instruction
@@ -75,16 +71,56 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        self.load()
+        running = True
+        # Set flag register
+        self.reg[self.fl] = 0
+        # Instructions Decoded from LS8-spec
+        LDI = 0b10000010
+        PRN = 0b01000111
+        HLT = 0b00000001
+        MUL = None
+
         while True:
-            command = self.ram[self.pc]
+            # This is the Instruction Register as 'command'
+            command = self.ram_read(self.pc)
+            #  op_a needs to read next byte after PC
+            operand_a = self.ram_read(self.pc + 1)
+            #  op_b needs to read next 2 bytes after PC
+            operand_b = self.ram_read(self.pc + 2)
+            # print('Running ---', IR)
+
+            if command == HLT:
+                print("HALT")
+                running = False
+                sys.exit(0)
 
             if command == LDI:
-                reg_num = self.ram_read(self.pc + 1)
-                value = self.ram_read(self.pc + 2)
-                self.reg[reg_num] = value
+                # LDI: register immediate. Set the value of a register to an integer
+                # Now put value in correct register
+                print("LDI runs first")
+                self.reg[operand_a] = operand_b
+                print("reg", self.reg)
+                # used both, so advance by 3 to start at next correct value
+                # op_a will be 1 ahead from current pos, op_b 2
+                print("PC", self.pc)
+                # self.trace()
                 self.pc += 3
-            if command == HLT:
-                pass
+
             if command == PRN:
-                pass
+                # PRN: register pseudo-instruction
+                # print numeric value stored in given register
+                print(self.reg[operand_a])
+                # self.trace()
+                print("reg", self.reg)
+                print("PC", self.pc)
+                self.pc += 2
+
+            else:
+                # self.trace()
+                print("------------------")
+                print("IR, 130 = LDI =>", command)
+                print("PC", self.pc)
+                print("reg", self.reg)
+                print("op_a", operand_a)
+                print("op_b", operand_b)
+                print("------------------")
