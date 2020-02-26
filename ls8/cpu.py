@@ -105,7 +105,7 @@ class CPU:
 
             if command == PUS:
                 # Grab the register argument
-                reg = self.ram[pc + 1]
+                reg = self.ram[self.pc + 1]
                 val = self.reg[reg]
                 # Decrement the SP
                 self.reg[self.sp] -= 1
@@ -115,7 +115,7 @@ class CPU:
 
             if command == POP:
                 # Grab the value from the top of the stack
-                reg = self.ram[pc + 1]
+                reg = self.ram[self.pc + 1]
                 val = self.ram[self.reg[self.sp]]
                 # Decrement the SP
                 self.reg[reg] = val
