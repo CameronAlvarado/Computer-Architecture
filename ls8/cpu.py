@@ -11,6 +11,7 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
         self.fl = 0
+        self.sp = 7
 
     def ram_read(self, mar):
         return self.ram[mar]
@@ -90,6 +91,8 @@ class CPU:
         PRN = 0b01000111
         HLT = 0b00000001
         MUL = 0b10100010
+        PUS = 0b01000101
+        POP = 0b01000110
 
         while True:
             # This is the Instruction Register as 'command'
@@ -99,6 +102,26 @@ class CPU:
             #  op_b needs to read next 2 bytes after PC
             operand_b = self.ram_read(self.pc + 2)
             # print('Running ---', IR)
+
+            if command == PUS:
+                # Grab the register argument
+                reg = self.ram[pc + 1]
+                val = self.reg[reg]
+                # Decrement the SP
+                self.reg[self.sp] -= 1
+                # Copy the value in the given register to the address pointed to by SP.
+                self.ram[self.reg[self.sp]] = val
+                self.pc += 2
+
+            if command == POP:
+                # Grab the value from the top of the stack
+                reg = self.ram[pc + 1]
+                val = self.ram[self.reg[self.sp]]
+                # Decrement the SP
+                self.reg[reg] = val
+                # Increment SP
+                self.reg[self.sp] += 1
+                self.pc += 2
 
             if command == HLT:
                 print("HALT")
