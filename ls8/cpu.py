@@ -89,6 +89,9 @@ class CPU:
         MUL = 0b10100010
         PUS = 0b01000101
         POP = 0b01000110
+        CAL = 0b01010000
+        RET = 0b00010001
+        ADD = 0b10100000
 
         while True:
             # This is the Instruction Register as 'command'
@@ -98,6 +101,34 @@ class CPU:
             #  op_b needs to read next 2 bytes after PC
             operand_b = self.ram_read(self.pc + 2)
             # print('Running ---', IR)
+            if command == CAL:
+                # Calls a subroutine (function) at the address stored in the register.
+
+                # 1. The address of the instruction directly after `CALL` is
+                #    pushed onto the stack.
+                self.reg[self.sp] -= 1
+                self.ram[self.reg[self.sp]] = self.pc + 2
+                #    This allows us to return to where we left off when the
+                #    subroutine finishes executing.
+
+                # 2. The PC is set to the address stored in the given register.
+                reg = self.ram[self.pc + 1]
+                self.pc = self.reg[reg]
+                #    We jump to that location in RAM and execute the first instruction
+                #    in the subroutine.
+                #    The PC can move forward or backwards from its current location.
+
+            if command == RET:
+                # Return from subroutine
+                # Pop the value from the top of the stack and store it in the `PC`.
+                self.pc = self.ram[self.reg[self.sp]]
+                self.reg[self.sp] += 1
+
+            if command == ADD:
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                self.reg[reg_a] += self.reg[reg_b]
+                self.pc += 3
 
             if command == PUS:
                 # Grab the register argument
