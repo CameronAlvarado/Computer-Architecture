@@ -7,7 +7,7 @@ class CPU:
     """Main CPU class."""
 
     def __init__(self):
-        self.ram = [0] * 255
+        self.ram = [0] * 256
         self.reg = [0] * 8
         self.pc = 0
         self.fl = 0
@@ -31,7 +31,7 @@ class CPU:
                     if value == "":
                         continue
                     num = int(value, 2)
-                    print(num)
+                    # print(num)
                     self.ram_write(num, address)
                     address += 1
         except FileNotFoundError:
@@ -62,10 +62,6 @@ class CPU:
             raise Exception("Unsupported ALU operation")
 
     def trace(self):
-        """
-        Handy function to print out the CPU state. You might want to call this
-        from run() if you need help debugging.
-        """
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
@@ -112,6 +108,7 @@ class CPU:
                 # Copy the value in the given register to the address pointed to by SP.
                 self.ram[self.reg[self.sp]] = val
                 self.pc += 2
+                print("PUSH")
 
             if command == POP:
                 # Grab the value from the top of the stack
@@ -122,6 +119,7 @@ class CPU:
                 # Increment SP
                 self.reg[self.sp] += 1
                 self.pc += 2
+                print("POP")
 
             if command == HLT:
                 print("HALT")
@@ -133,13 +131,13 @@ class CPU:
                 multi = self.reg[operand_a] * self.reg[operand_b]
                 self.reg[operand_a] = multi
                 self.pc += 3
+                print("MUL")
 
             if command == LDI:
-                # LDI: register immediate. Set the value of a register to an integer
+                # Set the value of a register to an integer
                 # Now put value in correct register
-                print("LDI runs first")
                 self.reg[operand_a] = operand_b
-                print("reg", self.reg)
+                print("Register:", self.reg)
                 # used both, so advance by 3 to start at next correct value
                 # op_a will be 1 ahead from current pos, op_b 2
                 print("PC", self.pc)
@@ -149,18 +147,18 @@ class CPU:
             if command == PRN:
                 # PRN: register pseudo-instruction
                 # print numeric value stored in given register
-                print(self.reg[operand_a])
+                print(f"R{operand_a} is", self.reg[operand_a])
                 # self.trace()
-                print("reg", self.reg)
+                print("Register:", self.reg)
                 print("PC", self.pc)
                 self.pc += 2
 
             # else:
-                # self.trace()
-                print("------------------")
-                print("IR, 130 = LDI =>", command)
-                print("PC", self.pc)
-                print("reg", self.reg)
-                print("op_a", operand_a)
-                print("op_b", operand_b)
-                print("------------------")
+                self.trace()
+                # print("------------------")
+                # print("IR, 130 = LDI =>", command)
+                # print("PC", self.pc)
+                # print("reg", self.reg)
+                # print("op_a", operand_a)
+                # print("op_b", operand_b)
+                # print("------------------")
