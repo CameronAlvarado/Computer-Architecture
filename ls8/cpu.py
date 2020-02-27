@@ -147,13 +147,13 @@ class CPU:
             if command == PRN:
                 # PRN: register pseudo-instruction
                 # print numeric value stored in given register
-                print(f"R{operand_a} is", self.reg[operand_a])
+                print(self.reg[operand_a])
                 # self.trace()
                 print("Register:", self.reg)
                 print("PC", self.pc)
                 self.pc += 2
 
-            # else:
+            else:
                 self.trace()
                 # print("------------------")
                 # print("IR, 130 = LDI =>", command)
